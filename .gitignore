@@ -19,6 +19,7 @@ project/plugins/project/
 
 /.metals/
 /.bloop/
+/.bsp/
 /.vscode/
 /project/project/
 /project/.bloop/
