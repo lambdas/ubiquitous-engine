@@ -5,7 +5,12 @@ import java.time.ZonedDateTime
 case class Trace(traceId: String, 
                  start: ZonedDateTime,
                  complete: ZonedDateTime,
-                 events: Seq[Event])
+                 events: Seq[Event]) {
+
+  def isInRange(from: ZonedDateTime, to: ZonedDateTime): Boolean = {
+    !from.isAfter(start) && !to.isBefore(complete)
+  }
+}
 
 object Trace {
 

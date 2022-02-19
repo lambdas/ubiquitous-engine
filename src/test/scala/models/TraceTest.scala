@@ -29,4 +29,29 @@ class TraceTest extends AnyFlatSpec {
         List(
           Event("trace_1", "Incident logging",        ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), None))))
   }
+
+  "Trace.isInRange" should "return true if the trace is in provided range" in {
+    Trace("trace_0", ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), Nil)
+      .isInRange(ZonedDateTime.of(2015, 1, 4, 12, 9, 44, 0, UTC), ZonedDateTime.of(2017, 1, 4, 12, 17, 44, 0, UTC)) shouldBe true
+  }
+
+  "Trace.isInRange" should "return true if the trace starts when provided range starts" in {
+    Trace("trace_0", ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), Nil)
+      .isInRange(ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), ZonedDateTime.of(2017, 1, 4, 12, 17, 44, 0, UTC)) shouldBe true
+  }
+
+  "Trace.isInRange" should "return true if the trace ends when provided range ends" in {
+    Trace("trace_0", ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), Nil)
+      .isInRange(ZonedDateTime.of(2015, 1, 4, 12, 9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC)) shouldBe true
+  }
+
+  "Trace.isInRange" should "return false if the trace starts before provided range starts" in {
+    Trace("trace_0", ZonedDateTime.of(2015, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), Nil)
+      .isInRange(ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC)) shouldBe false
+  }
+
+  "Trace.isInRange" should "return false if the trace ends after provided range ends" in {
+    Trace("trace_0", ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2017, 1, 4, 12, 17, 44, 0, UTC), Nil)
+      .isInRange(ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC)) shouldBe false
+  }
 }
