@@ -35,23 +35,122 @@ class TraceTest extends AnyFlatSpec {
       .isInRange(ZonedDateTime.of(2015, 1, 4, 12, 9, 44, 0, UTC), ZonedDateTime.of(2017, 1, 4, 12, 17, 44, 0, UTC)) shouldBe true
   }
 
-  "Trace.isInRange" should "return true if the trace starts when provided range starts" in {
+  it should "return true if the trace starts when provided range starts" in {
     Trace("trace_0", ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), Nil)
       .isInRange(ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), ZonedDateTime.of(2017, 1, 4, 12, 17, 44, 0, UTC)) shouldBe true
   }
 
-  "Trace.isInRange" should "return true if the trace ends when provided range ends" in {
+  it should "return true if the trace ends when provided range ends" in {
     Trace("trace_0", ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), Nil)
       .isInRange(ZonedDateTime.of(2015, 1, 4, 12, 9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC)) shouldBe true
   }
 
-  "Trace.isInRange" should "return false if the trace starts before provided range starts" in {
+  it should "return false if the trace starts before provided range starts" in {
     Trace("trace_0", ZonedDateTime.of(2015, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), Nil)
       .isInRange(ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC)) shouldBe false
   }
 
-  "Trace.isInRange" should "return false if the trace ends after provided range ends" in {
+  it should "return false if the trace ends after provided range ends" in {
     Trace("trace_0", ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2017, 1, 4, 12, 17, 44, 0, UTC), Nil)
       .isInRange(ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC)) shouldBe false
+  }
+
+  "directFollowers" should "return direct followers if events follow each other" in {
+    Trace(
+      "trace_0",
+      ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC),
+      ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC),
+      List(
+        Event(
+          "trace_0", 
+          "Incident classification", 
+          ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), 
+          Some("Citrix")),
+        Event(
+          "trace_0", 
+          "Resolution and recovery", 
+          ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), 
+          Some("Citrix")),
+        Event(
+          "trace_0", 
+          "Incident logging",        
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          None)))
+      .directFollowers.toSeq should contain theSameElementsAs List(
+        ("Incident logging", "Incident classification"),
+        ("Incident classification", "Resolution and recovery"))
+  }
+
+  it should "return direct followers if events form a DAG" in {
+    Trace(
+      "trace_0",
+      ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC),
+      ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC),
+      List(
+        Event(
+          "trace_0", 
+          "Incident logging",        
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          None),
+        Event(
+          "trace_0", 
+          "Incident classification", 
+          ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), 
+          Some("Citrix")),
+        Event(
+          "trace_0", 
+          "Initial diagnosis", 
+          ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), 
+          Some("Citrix")),
+        Event(
+          "trace_0", 
+          "Resolution and recovery", 
+          ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), 
+          Some("Citrix"))))
+      .directFollowers.toSeq should contain theSameElementsAs List(
+        ("Incident logging", "Incident classification"),
+        ("Incident logging", "Initial diagnosis"),
+        ("Incident classification", "Resolution and recovery"),
+        ("Initial diagnosis", "Resolution and recovery"))
+  }
+
+  it should "return nothing if events start at the same time" in {
+    Trace(
+      "trace_0",
+      ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC),
+      ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC),
+      List(
+        Event(
+          "trace_0", 
+          "Incident logging",        
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          None),
+        Event(
+          "trace_0", 
+          "Incident classification", 
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          Some("Citrix")),
+        Event(
+          "trace_0", 
+          "Initial diagnosis", 
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          Some("Citrix")),
+        Event(
+          "trace_0", 
+          "Resolution and recovery", 
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
+          Some("Citrix"))))
+      .directFollowers.toSeq should contain theSameElementsAs Nil
   }
 }
