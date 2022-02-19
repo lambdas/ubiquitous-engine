@@ -1,3 +1,24 @@
 package models
 
-case class Trace(traceId: String, events: Seq[Event])
+import java.time.ZonedDateTime
+
+case class Trace(traceId: String, 
+                 start: ZonedDateTime,
+                 complete: ZonedDateTime,
+                 events: Seq[Event])
+
+object Trace {
+
+  def fromEvents(events: Seq[Event]): Seq[Trace] = {
+    events
+      .groupBy(_.traceId)
+      .map { case (traceId, events) => 
+        Trace(
+          traceId, 
+          events.view.map(_.start).min, 
+          events.view.map(_.complete).max, 
+          events) 
+      }
+      .toSeq
+  }
+}
