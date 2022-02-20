@@ -12,7 +12,7 @@ import scala.util.Success
 
 class EventTest extends AnyFlatSpec {
   
-  "Event.fromCSV" should "return events" in {
+  "fromCSV" should "return events" in {
     val testCsv = 
       """|Case ID,Activity,Start,Complete,Classification
          |trace_0,Incident logging,2016/01/04 12:09:44.000,2016/01/04 12:09:44.000,

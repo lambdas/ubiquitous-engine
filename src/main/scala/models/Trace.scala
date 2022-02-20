@@ -22,6 +22,13 @@ case class Trace(traceId: String,
       .collect { case Seq(e1, e2) => cartesianProduct(e1._2, e2._2) }
       .flatten
   }
+
+  def directFollowersSimple: Iterator[(String, String)] = {
+    events
+      .sortBy { e => (e.start, e.activity) } // also sort by activity name to get a stable order in case of events with the same start time
+      .sliding(2)
+      .collect { case Seq(e1, e2) => (e1.activity, e2.activity) }
+  }
 }
 
 object Trace {
