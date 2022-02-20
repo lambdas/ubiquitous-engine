@@ -26,7 +26,7 @@ object Event {
       .ofPattern("yyyy/MM/dd HH:mm:ss.SSS")
       .withZone(UTC)
 
-  def fromCSV(source: Source): Try[Vector[Event]] = {
+  def fromCSV(source: Source): Try[IndexedSeq[Event]] = {
     Using(CSVReader.open(source)) { reader =>
       reader
         .iteratorWithHeaders

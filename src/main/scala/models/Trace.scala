@@ -13,7 +13,7 @@ case class Trace(traceId: String,
     !from.isAfter(start) && !to.isBefore(complete)
   }
 
-  def directFollowers: Iterator[(String, String)] = {
+  def directFollowers: Seq[(Activity, Activity)] = {
     events
       .groupMap(_.start)(_.activity)
       .toSeq
@@ -21,19 +21,21 @@ case class Trace(traceId: String,
       .sliding(2)
       .collect { case Seq(e1, e2) => cartesianProduct(e1._2, e2._2) }
       .flatten
+      .toSeq
   }
 
-  def directFollowersSimple: Iterator[(String, String)] = {
+  def directFollowersSimple: Seq[(Activity, Activity)] = {
     events
-      .sortBy { e => (e.start, e.activity) } // also sort by activity name to get a stable order in case of events with the same start time
+      .sortBy(_.start)
       .sliding(2)
       .collect { case Seq(e1, e2) => (e1.activity, e2.activity) }
+      .toSeq
   }
 }
 
 object Trace {
 
-  def fromEvents(events: Seq[Event]): Seq[Trace] = {
+  def fromEvents(events: Seq[Event]): IndexedSeq[Trace] = {
     events
       .groupBy(_.traceId)
       .map { case (traceId, events) => 
@@ -43,7 +45,7 @@ object Trace {
           events.view.map(_.complete).max, 
           events) 
       }
-      .toSeq
+      .toVector
   }
 
   private def cartesianProduct[A, B](xs: Seq[A], ys: Seq[B]): Seq[(A, B)] = {

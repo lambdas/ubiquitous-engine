@@ -10,9 +10,24 @@ class TraceTest extends AnyFlatSpec {
 
   "fromEvents" should "return traces" in {
     val events = List(
-      Event("trace_0", "Incident logging",        ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), None),
-      Event("trace_0", "Incident classification", ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), Some("Citrix")),
-      Event("trace_1", "Incident logging",        ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), None))
+      Event(
+        "trace_0", 
+        "Incident logging",        
+        ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), 
+        ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), 
+        None),
+      Event(
+        "trace_0", 
+        "Incident classification", 
+        ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), 
+        ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), 
+        Some("Citrix")),
+      Event(
+        "trace_1", 
+        "Incident logging",        
+        ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), 
+        ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), 
+        None))
     
     Trace.fromEvents(events) should contain theSameElementsAs List(
       Trace(
@@ -20,14 +35,29 @@ class TraceTest extends AnyFlatSpec {
         ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC),
         ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC),
         List(
-          Event("trace_0", "Incident logging",        ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), None),
-          Event("trace_0", "Incident classification", ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), Some("Citrix")))),
+          Event(
+            "trace_0", 
+            "Incident logging",        
+            ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), 
+            ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), 
+            None),
+          Event(
+            "trace_0", 
+            "Incident classification", 
+            ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), 
+            ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), 
+            Some("Citrix")))),
       Trace(
         "trace_1",
         ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC),
         ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC),
         List(
-          Event("trace_1", "Incident logging",        ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), None))))
+          Event(
+            "trace_1", 
+            "Incident logging",        
+            ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), 
+            ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), 
+            None))))
   }
 
   "isInRange" should "return true if the trace is in provided range" in {
@@ -250,8 +280,8 @@ class TraceTest extends AnyFlatSpec {
           ZonedDateTime.of(2016, 1, 4, 12, 9, 44, 0, UTC), 
           Some("Citrix"))))
       .directFollowersSimple.toSeq should contain theSameElementsAs List(
-        ("Incident logging", "Initial diagnosis"),
-        ("Incident classification", "Incident logging"),
+        ("Incident logging", "Incident classification"), 
+        ("Incident classification", "Initial diagnosis"), 
         ("Initial diagnosis", "Resolution and recovery"))
   }
 }

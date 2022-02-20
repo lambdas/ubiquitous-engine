@@ -21,8 +21,18 @@ class EventTest extends AnyFlatSpec {
     Event
       .fromCSV(Source.fromString(testCsv))
       .get should contain theSameElementsAs List(
-        Event("trace_0", "Incident logging",        ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), None),
-        Event("trace_0", "Incident classification", ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), Some("Citrix")))
+        Event(
+          "trace_0", 
+          "Incident logging",        
+          ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12,  9, 44, 0, UTC), 
+          None),
+        Event(
+          "trace_0", 
+          "Incident classification", 
+          ZonedDateTime.of(2016, 1, 4, 12, 10, 44, 0, UTC), 
+          ZonedDateTime.of(2016, 1, 4, 12, 17, 44, 0, UTC), 
+          Some("Citrix")))
   }
 
   it should "fail if there is no Case ID value" in {
